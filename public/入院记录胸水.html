@@ -1,0 +1,402 @@
+<!-- 引入样式 -->
+<link rel="stylesheet" href="/css/element-ui/lib/theme-chalk/index.css" />
+<style>
+  .inputBox .el-input__inner {
+    height: 20px;
+  }
+
+  .el-input-group__append {
+    padding: 0 5px;
+  }
+</style>
+<div id="app">
+  <template>
+    <p style="text-align:center;">
+      <span style="font-size:24px;">天津市胸科医院急诊病历</span>
+    </p>
+    <p style="text-align:left;">
+      <span style="font-size:24px;"> </span>
+    </p>
+    <table style="width:100%;" cellpadding="2" cellspacing="0" align="center" border="1" bordercolor="#fffff">
+      <tbody>
+        <tr>
+          <td style="text-align:center;width:9%;">
+            <span style="font-size:16px;">姓名:</span>
+          </td>
+          <td style="text-align:center;width:10%;">
+            <span id="name" style="font-size:16px;">
+              <span v-if="baseConfig.isPrint">{{form.name}}</span>
+              <el-input v-model="form.name" placeholder="请填写" v-if="!baseConfig.isPrint"></el-input>
+            </span>
+          </td>
+          <td style="text-align:center;width:9%;">
+            <span style="font-size:16px;">性别:</span>
+          </td>
+          <td style="text-align:center;width:8%;">
+            <span style="font-size:16px;">
+              <span v-if="baseConfig.isPrint">{{dictF('sex',form.gender)}}</span>
+              <el-select v-model="form.gender" placeholder="" v-if="!baseConfig.isPrint">
+                <el-option :value="item.value" :label="item.label" v-for="(item,i) in dictF('sex','all')" :key="i">
+                </el-option>
+              </el-select>
+            </span>
+          </td>
+          <td style="text-align:center;width:9%;">
+            <span style="font-size:16px;">年龄:</span>
+          </td>
+          <td style="text-align:center;width:8%;">
+            <span id="age" style="font-size:16px;">
+              <span v-if="baseConfig.isPrint">{{form.age}}</span>
+              <el-input v-model="form.age" placeholder="请填写" v-if="!baseConfig.isPrint"></el-input>
+            </span>
+          </td>
+          <td style="text-align:center;width:9%;">
+            <span style="font-size:16px;">科室:</span>
+          </td>
+          <td style="text-align:center;width:13%;">
+            <span style="font-size:16px;"><span id="department">
+                <span v-if="baseConfig.isPrint">{{deptById.name}}</span>
+                <el-cascader :options="deptData" :props="deptDataProps" v-model="form.departmentId"
+                  v-if="!baseConfig.isPrint"></el-cascader>
+              </span></span>
+          </td>
+          <td style="text-align:center;width:12%;">
+            <span style="font-size:16px;">住院号:</span>
+          </td>
+          <td style="text-align:center;width:13%;">
+            <span style="font-size:16px;"><span id="admissionCode">
+                <span v-if="baseConfig.isPrint">{{form.hisCode}}</span>
+                <el-input v-model="form.hisCode" placeholder="请填写" v-if="!baseConfig.isPrint"></el-input>
+              </span></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+    <p style="text-align:center;">
+      <span style="font-size:24px;">病历首页</span>
+    </p>
+    <p style="text-align:left;">
+      <span style="font-size:24px;"> </span>
+    </p>
+    <table style="width:100%;" cellpadding="2" cellspacing="0" border="1" bordercolor="#fffff">
+      <tbody>
+        <tr>
+          <td>
+            <br />
+          </td>
+          <td>
+            <br />
+          </td>
+          <td>
+            <br />
+          </td>
+          <td>
+            <br />
+          </td>
+          <td style="width:22%;">
+            <span style="font-size:16px;">急诊号:<span style="font-size:16px;" id="bah"
+                v-text="form.visitId"></span></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      <br />
+    </p>
+    <table style="width:90%;" cellpadding="2" cellspacing="0" align="center" border="1" bordercolor="#fffff">
+      <tbody>
+        <tr>
+          <td style="width:10%;">
+            <span style="font-size:16px;">姓名：</span>
+          </td>
+          <td style="width:25%;">
+            <span style="font-size:16px;"><span id="name1" v-text="form.name"></span></span>
+          </td>
+          <td style="width:15%;">
+            <span style="font-size:16px;">籍贯：</span>
+          </td>
+          <td style="width:25%;">
+            <span style="font-size:16px;"><span id="nativePlace" v-text="form.nativePlace"></span></span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span style="font-size:16px;">性别：</span>
+          </td>
+          <td>
+            <span style="font-size:16px;"><span id="gender1">{{dictF('sex',form.gender)}}</span></span>
+          </td>
+          <td>
+            <span style="font-size:16px;">现住址：</span>
+          </td>
+          <td>
+            <span style="white-space:normal;font-size:16px;"><span id="addressDetail"
+                v-text="form.addressDetail"></span></span><br />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span style="font-size:16px;">年龄：</span>
+          </td>
+          <td>
+            <span style="font-size:16px;"><span id="age1" v-text="form.age"></span></span>
+          </td>
+          <td>
+            <span style="font-size:16px;">入院记录：</span>
+          </td>
+          <td>
+            <span style="white-space:normal;font-size:16px;"><span id="inDate">
+                <span v-if="baseConfig.isPrint">{{form.inDate}}</span>
+                <el-input v-model="form.inDate" placeholder="请填写" v-if="!baseConfig.isPrint"></el-input>
+              </span></span><br />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span style="font-size:16px;">民族：</span>
+          </td>
+          <td>
+            <span style="font-size:16px;"><span id="nation" v-text="form.nation"></span></span>
+          </td>
+          <td>
+            <span style="font-size:16px;">病历记录日期：</span>
+          </td>
+          <td>
+            <span style="white-space:normal;font-size:16px;"><span id="bljlrq">
+                <span v-if="baseConfig.isPrint">{{form.bljlrq}}</span>
+                <el-date-picker v-model="form.bljlrq" type="date" placeholder="选择日期" style="width: 100%"
+                  v-if="!baseConfig.isPrint">
+                </el-date-picker>
+              </span></span><br />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span style="font-size:16px;">婚姻：</span>
+          </td>
+          <td>
+            <span style="font-size:16px;"><span id="maritalStatus"
+                v-text="maritalStatus(form.maritalStatus)"></span></span>
+          </td>
+          <td>
+            <span style="font-size:16px;">病史陈述者：</span>
+          </td>
+          <td>
+            <span style="white-space:normal;font-size:16px;"><span id="bscsz">
+                <span v-if="baseConfig.isPrint">{{form.bscsz}}</span>
+                <el-input v-model="form.bscsz" placeholder="请填写" v-if="!baseConfig.isPrint"></el-input>
+              </span></span><br />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span style="font-size:16px;">职业：</span>
+          </td>
+          <td>
+            <span style="font-size:16px;"><span id="zy"></span></span>
+          </td>
+          <td>
+            <span style="font-size:16px;">病史可靠程度：</span>
+          </td>
+          <td>
+            <span style="white-space:normal;font-size:16px;"><span id="bskkcd">
+                <span v-if="baseConfig.isPrint">{{form.bskkcd}}</span>
+                <el-input v-model="form.bskkcd" placeholder="请填写" v-if="!baseConfig.isPrint"></el-input>
+              </span></span><br />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table style="width:100%;" cellpadding="2" cellspacing="0" border="1" bordercolor="#FFFFFF">
+      <tbody>
+        <tr>
+          <td style="width: 12%;vertical-align:top;">
+            <span style="font-size:16px;"><strong>主诉：</strong></span>
+          </td>
+          <td>
+            <span v-if="baseConfig.isPrint">{{form.diagnosisList}}</span>
+            <t-edit v-model="form.diagnosisList" type="textarea" :rows="4" placeholder="请输入内容"
+              v-if="!baseConfig.isPrint"></t-edit>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align:top;">
+            <span style="font-size:16px;"><strong>现病史：</strong></span>
+          </td>
+          <td>
+            <span v-if="baseConfig.isPrint" v-html="form.nowHistory"></span>
+            <t-edit v-model="form.nowHistory" @ready="ready" v-if="!baseConfig.isPrint"></t-edit>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align:top;">
+            <span style="font-size:16px;"><strong>既往史</strong><strong></strong><strong>：</strong></span>
+          </td>
+          <td>
+            <span v-if="baseConfig.isPrint" v-html="form.nowHistory"></span>
+            <t-edit v-model="form.oldHistory" @ready="ready" v-if="!baseConfig.isPrint"></t-edit>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="text-align:center;">
+      <br />
+    </div>
+    <table style="width:100%;" cellpadding="2" cellspacing="0" border="1" bordercolor="#FFFFFF" align="center">
+      <tbody>
+        <tr>
+          <td style="width: 12%;">
+            <span style="font-size:16px;"><strong>体格检查:</strong></span>
+          </td>
+          <td><span style="font-size:16px;">体温:</span><br /></td>
+          <td>
+            <span style="font-size:16px;"><span id="temperature">
+                <span v-if="baseConfig.isPrint">{{form.temperature}}℃</span>
+                <el-input v-model="form.temperature" placeholder="请填写" style="width:100%" v-if="!baseConfig.isPrint">
+                  <template slot="append"><span style="font-size:16px;">℃</span></template>
+                </el-input>
+              </span></span>
+          </td>
+          <td>
+            <span style="font-size:16px;">脉搏:</span>
+          </td>
+          <td>
+            <span style="font-size:16px;"><span id="heartRate">
+                <span v-if="baseConfig.isPrint">{{form.heartRate}}次/分</span>
+                <el-input v-model="form.heartRate" placeholder="请填写" style="width:100%" v-if="!baseConfig.isPrint">
+                  <template slot="append"><span style="font-size:16px;">次/分</span></template>
+                </el-input>
+              </span></span>
+          </td>
+          <td>
+            <span style="font-size:16px;">呼吸:</span>
+          </td>
+          <td>
+            <span style="font-size:16px;"><span id="breathe">
+                <span v-if="baseConfig.isPrint">{{form.breathe}}次/分</span>
+                <el-input v-model="form.breathe" placeholder="请填写" v-if="!baseConfig.isPrint">
+                  <template slot="append"><span style="font-size:16px;">次/分</span></template>
+                </el-input>
+              </span></span>
+          </td>
+          <td>
+            <span style="font-size:16px;">血压:</span>
+          </td>
+          <td>
+            <span style="font-size:16px;"><span id="diastolicPressure">
+                <span v-if="baseConfig.isPrint">{{form.diastolicPressure}}mm/{{form.systolicPressure}}Hg</span>
+                <el-input v-model="form.diastolicPressure" placeholder="请填写" style="width:44%"
+                  v-if="!baseConfig.isPrint">
+                  <template slot="append"><span style="font-size:16px;">mm</span></template> </el-input>/<el-input
+                  v-model="form.systolicPressure" placeholder="请填写" style="width:44%" v-if="!baseConfig.isPrint">
+                  <template slot="append"><span style="font-size:16px;">Hg</span></template>
+                </el-input>
+              </span>
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <table style="width:100%;" cellpadding="2" cellspacing="0" border="1" bordercolor="#FFFFFF">
+      <tbody>
+        <tr>
+          <td style="width:12%;vertical-align:top;">
+            <span style="font-size:16px;"><strong>一般情况:</strong></span>
+          </td>
+          <td>
+            <!-- <span style="font-size:16px;">发育正常，营养良好，正常面容，自动体位，表情自然，神志清楚，精神好，语言正常，查体合作。步入病房。双肺叩清，双肺呼吸音清，未闻及干湿啰音，心率[数值]次/分，心律齐，心音有力，各瓣膜区未闻及病理性杂音。双下肢无水肿。</span>  -->
+            <t-edit v-model="form.generalSituation" @ready="ready" v-if="!baseConfig.isPrint"></t-edit>
+            <span v-html="form.generalSituation" v-if="baseConfig.isPrint"></span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span style="font-size:16px;"><strong>
+               辅助检查:
+              </strong></span>
+          </td>
+          <td>
+            <span style="font-size:16px;">
+              <span v-html="form.inspect" v-if="baseConfig.isPrint"></span>
+              <t-edit ref="tEdit" v-model="form.inspect" @ready="ready" v-if="!baseConfig.isPrint"></t-edit>
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align:top;">
+            <span style="font-size:16px;"><strong>心电图:</strong><strong></strong></span>
+          </td>
+          <td>
+            <span v-html="form.cardiogram" v-if="baseConfig.isPrint"></span>
+            <t-edit v-model="form.cardiogram" @ready="ready" v-if="!baseConfig.isPrint"></t-edit>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <span style="font-size:small;"><br /> </span>
+    <p>
+      <br />
+    </p>
+    <table style="width:100%;" cellpadding="2" cellspacing="0" border="1" bordercolor="#FFFFFF">
+      <tbody>
+        <tr>
+          <td style="width:12%;vertical-align:top;">
+            <span style="font-size:16px;"><strong>初步诊断:</strong></span>
+          </td>
+          <td>
+            <span v-html="form.preliminary" v-if="baseConfig.isPrint"></span>
+            <t-edit v-model="form.preliminary" @ready="ready" v-if="!baseConfig.isPrint"></t-edit>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <table style="width:100%;" cellpadding="2" cellspacing="0" border="1" bordercolor="#FFFFFF">
+      <tbody>
+        <tr>
+          <td style="width:30%;">
+            <br />
+          </td>
+          <!-- <td style="width:30%;">
+            <span style="font-size:16px;"><strong>主治医生签名:</strong>
+              <span v-html="form.mainDoctor" v-if="baseConfig.isPrint"></span>
+              <el-input v-model="form.mainDoctor" placeholder="请填写" style="width:200px" v-if="!baseConfig.isPrint"></el-input>
+            </span>
+          </td> -->
+          <td style="width:30%;">
+            <span style="font-size:16px;"><strong>医生签名:</strong>
+              <span v-html="form.assistDoctor" v-if="baseConfig.isPrint"></span>
+              <el-input v-model="form.assistDoctor" placeholder="请填写" style="width:200px" v-if="!baseConfig.isPrint">
+              </el-input>
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </template>
+</div>
+
+<script src="/js/jquery/1.12.4/jquery.min.js"></script>
+<script src="/js/vue/2.6.6/vue.min.js"></script>
+<script src="/js/element-ui/lib/theme-chalk/index.js"></script>
+<script src="/js/babel-standalone/7.0.0-beta.3/babel.min.js"></script>
+<script src="/ueditor1_4_3_3/ueditor.config.js" charset="utf-8"></script>
+<script src="/ueditor1_4_3_3/ueditor.all.min.js" charset="utf-8"></script>
+<script src="/js/tmpVuePlugin.js" type="text/babel"></script>
+<script src="/js/tmpEvent.js" type="text/babel"></script>
+<script src="/js/tmpApp.js" type="text/babel"></script>
+<script type="text/babel">
+  const controlData = new ControlData();
+	class TmpVue extends TmpApp {
+		init() {
+			this.req.nowHistory = `<p>患者于入院前${controlData.html('select',controlData.num(100))}年,${controlData.html('select',controlData.isExist)}明显诱因出现心悸，自觉心动过速，持续2-3分钟左右，${controlData.html('select',controlData.isExist)}恶心、${controlData.html('select',controlData.isExist)}呕吐，${controlData.html('select',controlData.isExist)}头晕、头痛，${controlData.html('select',controlData.isExist)}黑懵及晕厥，${controlData.html('select',controlData.isExist)}胸痛胸闷，症状可自行缓解，未就医。后症状间断发作，均为突发突止，发作不频繁，大约每年发作1-2次。于入院前3个月${controlData.html('select',controlData.isExist)}诱因开始频繁发作心悸，并伴有胸闷出汗，持续时间延长，最长达1小时余，到当地医院就诊，做心电图示室上性心动过速，心率为140次/分，予异搏定静脉推注后恢复窦律，今为进一步诊治收入我院。`;
+			this.req.oldHistory = `高血压史${controlData.html('select',controlData.num(100))}余年，最高达${controlData.html('select',controlData.num(500))}mmHg，服用复方降压片控制血压，平素未注意监测血压。糖尿病史${controlData.html('select',controlData.num(100))}余年，使用拜唐苹、二甲双胍、门冬胰岛素控制血糖。${controlData.html('select',controlData.isExist)}脑梗塞病史。${controlData.html('select',controlData.isExist)}消化系统疾病、甲状腺及血液系统疾病史。${controlData.html('select',controlData.isOk)}肝炎、结核、疟疾等传染病史。${controlData.html('select',controlData.isOk)}外伤史，${controlData.html('select',controlData.isOk)}手术史。${controlData.html('select',controlData.isOk)}输血史。${controlData.html('select',controlData.isOk)}药物、食物过敏史，无毒物接触史。预防接种随当地进行。`;
+			this.req.generalSituation = '心肺五项，血常规，肾功能，电解质，凝血';
+			this.req.cardiogram = `窦率，I、AVL/II、III、AVF/AVR、/V1、V2/V3、V4/V5、V6/V7、V8、V9/ V3R、V4R、V5R导联ST段压低mv。呈q/QS/Q波，T波低平双向倒置，房早/室早/房颤/交界早/右左束支传导阻滞不完全。`;
+      this.req.preliminary = ``;
+    }
+	}
+	new TmpVue().createVue();
+</script>

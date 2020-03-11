@@ -1,0 +1,101 @@
+<!-- 引入样式 -->
+<link rel="stylesheet" href="/css/element-ui/lib/theme-chalk/index.css" />
+<link rel="stylesheet" href="/css/tmpApp.css" />
+<div id="app">
+  <template>
+    <h1 class="is_center">深静脉穿刺知情同意书</h1>
+    <table style="width:100%;" cellpadding="0" cellspacing="0" align="center">
+        <tbody>
+          <tr>
+            <td style="text-align:center;width:9%;">
+              <span style="font-size:16px;">姓名:</span>
+            </td>
+            <td style="text-align:center;width:10%;">
+              <span id="name" style="font-size:16px;">
+                <span v-if="baseConfig.isPrint">{{form.name}}</span>
+                <el-input v-model="form.name" placeholder="请填写" v-if="!baseConfig.isPrint"></el-input>
+              </span>
+            </td>
+            <td style="text-align:center;width:9%;">
+              <span style="font-size:16px;">性别:</span>
+            </td>
+            <td style="text-align:center;width:8%;">
+              <span style="font-size:16px;">
+                <span v-if="baseConfig.isPrint">{{dictF('sex',form.gender)}}</span>
+                <el-select v-model="form.gender" placeholder="" v-if="!baseConfig.isPrint">
+                  <el-option :value="item.value" :label="item.label" v-for="(item,i) in dictF('sex','all')" :key="i"></el-option>
+                </el-select>
+              </span>
+            </td>
+            <td style="text-align:center;width:9%;">
+              <span style="font-size:16px;">年龄:</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    <el-row>
+      <el-col>
+        特殊检查（治疗）名称：<b>深静脉穿刺置管术</b>
+      </el-col>
+      <el-col>
+          根据患者目前的病情,需进行<b>深静脉穿刺置管术</b>治疗。经治医师已针对患者病情,
+          向患者说明该检查(治疗)的必要性及优、缺点。由于病情的关系及个体差异,在现有医
+          学科学技术的条件下,施行该检查(治疗)可能出现无法预料或者不能防范的医疗风险
+          和不良后果。经治医师已充分向患者(患者近亲属或代理人)交代,若发生所述情况,
+          医务人员将按医疗原则予以抢救,但仍可能产生不良后果。是否同意检查(治疗),请书
+          面表明意愿并签字。<br/>
+          特殊检查(治疗)可能出现的并发症及不良后果列举如下:<br/>
+          1.误伤大动脉,导致出血、血肿、出血性休克。2.血气胸。<br/>
+          3.动静脉接形成,淋巴漏。4.穿刺部位局部血肿、皮下气肿。<br/>
+          5.周围组织、神经损伤。6.心律失常。7.穿刺不成功。8.导管遗留、堵塞。9.血
+          栓形成及栓塞。10.局部感染或败血症。11.上述问题一旦发生,有可能需要拔除导管
+          后再次置管,必要时手术治疗。<br/>
+          12.其他:<br/>
+          本人系患者(或患者近亲属),患者因病,需行上述检查(治疗)。医师已告知可能
+          发生的医疗风险和不良后果,本人已充分理解,同意接受此检查(治疗),并授权医师对
+          检查(治疗)中切除标本或组织进行合理的医学处理,本人愿意承担相应的风险和后果。
+          因系本人意愿,以后对此不提出异议。
+      </el-col>
+    </el-row>
+    <el-form ref="form" :model="form" label-width="150px">
+      <el-form-item label="患者签名:">
+        <div class="is_input" v-if="baseConfig.isPrint">{{form.dependents}}</div>
+        <el-input class="is_input" v-model="form.dependents" placeholder="请填写" v-if="!baseConfig.isPrint"></el-input>
+      </el-form-item>
+      <el-form-item label="患者近亲属签名:">
+        <div class="is_input" v-if="baseConfig.isPrint">{{form.dependents}}</div>
+        <el-input class="is_input" v-model="form.dependents" placeholder="请填写" v-if="!baseConfig.isPrint"></el-input>
+      </el-form-item>
+      <el-form-item label="谈话医师签名:">
+        <div class="is_input" v-if="baseConfig.isPrint">{{form.dependents}}</div>
+        <el-input class="is_input" v-model="form.dependents" placeholder="请填写" v-if="!baseConfig.isPrint"></el-input>
+      </el-form-item>
+      <el-form-item class="is_right">
+        <div class="is_input" v-if="baseConfig.isPrint">{{form.time}}</div>
+        <el-date-picker v-model="form.time" type="datetime" placeholder="选择日期" v-if="!baseConfig.isPrint"
+          format="yyyy年MM月dd日HH时mm分">
+        </el-date-picker>
+      </el-form-item>
+    </el-form>
+  </template>
+</div>
+
+<script src="/js/jquery/1.12.4/jquery.min.js"></script>
+<script src="/js/vue/2.6.6/vue.min.js"></script>
+<script src="/js/element-ui/lib/theme-chalk/index.js"></script>
+<script src="/js/babel-standalone/7.0.0-beta.3/babel.min.js"></script>
+<script src="/ueditor1_4_3_3/ueditor.config.js" charset="utf-8"></script>
+<script src="/ueditor1_4_3_3/ueditor.all.min.js" charset="utf-8"></script>
+<script src="/js/tmpVuePlugin.js" type="text/babel"></script>
+<script src="/js/tmpEvent.js" type="text/babel"></script>
+<script src="/js/tmpApp.js" type="text/babel"></script>
+<script type="text/babel">
+  const controlData = new ControlData();
+	class TmpVue extends TmpApp {
+		init() {
+      this.req.diagnosis = `患者所患疾病,因病情需要应用抗凝治疗,可能出现出血可能,包括内脏出血,颅内出血,皮肤创口、血管针刺部位出血及血肿,近期外伤部位出血、血肿,眼底出血等,以及肝肾功能损伤,神经损害,严重时可危及生命。此外还可能出过敏皮肤,注射部位血肿、皮肤疼痛、灼痛、骚痒、红斑、坏死,及其他不可预料的副作用。请患者及家属了解以上情况,知情同意抗凝治疗并签字。`;
+      this.req.time = new Date().format('yyyy-MM-dd');
+		}
+  }
+	new TmpVue().createVue();
+</script>

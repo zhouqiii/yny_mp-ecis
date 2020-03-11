@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="/css/element-ui/lib/theme-chalk/index.css" />
+    <title>电子病历</title>
+    <style>
+      iframe {
+        display: block;
+        width: 1px;
+        position: absolute;
+        border: none;
+        height: 1px;
+      }
+      table {
+        width: 13cm;
+        margin: auto;
+        font-family: "新宋体";
+      }
+      .footerTitle {
+        display: table-footer-group;
+        text-align: center;
+      }
+      .headerTitle {
+        display: table-header-group;
+      }
+      .headerTitle h1 {
+        text-align: center;
+        margin: 0px;
+      }
+      .headerTitle .info div {
+        display: inline-block;
+        text-align: center;
+      }
+      .headerTitle .info {
+        margin: 20px 0;
+      }
+      b{
+        font-weight: bold;
+      }
+      @page {
+        size: A4;
+        margin: 10%;
+
+        @bottom-center {
+          content: "Page " counter(page);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <table>
+      <thead class="headerTitle">
+        <tr>
+          <td>
+            <h1>天津市胸科医院急诊病历</h1>
+            <div class="info">
+              <div>姓名: 张三</div>
+              <div>性别: 男</div>
+              <div>年龄: 58</div>
+              <div>科室:急诊</div>
+              <div>就诊号: 123456</div>
+            </div>
+            <hr>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td id="app"></td>
+        </tr>
+      </tbody>
+      <!-- <tfoot class="footerTitle">
+        <tr>
+          <td></td>
+        </tr>
+      </tfoot> -->
+    </table>
+  </body>
+  <script src="/js/jquery/1.12.4/jquery.min.js"></script>
+  <script>
+    (function() {
+      var iframes = [];
+      function getIframes() {
+        iframes = JSON.parse(sessionStorage.getItem("printAll"));
+      }
+      function showPage(html) {
+        $("#app").html(html);
+      }
+      function createHtml() {
+        const html = iframes.map(item => {
+          item.context =
+            "<script>var req=" +
+            JSON.stringify(item.req) +
+            ";var baseConfig={isInit: 1,isPrint: 1}" +
+            "</" +
+            "script>" +
+            item.context;
+          return $("<iframe>").attr("srcdoc", item.context);
+        });
+        return html;
+      }
+      function setIframeHeight(e) {
+        const iframe = e.target;
+        if (iframe) {
+          const iframeWin =
+            iframe.contentWindow || iframe.contentDocument.parentWindow;
+          if (iframeWin.document.body) {
+            iframe.height = $(iframeWin.document.body).find('#app').height()+50;
+            iframeWin.document.body.style.fontSize = "14px";
+            iframeWin.document.body.style.fontFamily = "宋体";
+            if (iframeWin.vApp) {
+              iframeWin.vApp.baseConfig.isPrint = 1;
+            }
+          }
+        }
+      }
+      function main() {
+        getIframes();
+        showPage(createHtml());
+        var time = setTimeout(function() {
+          $("iframe").each(function(i, item) {
+            setIframeHeight({ target: item });
+          });
+        }, 5000);
+      }
+      main();
+    })();
+  </script>
+</html>

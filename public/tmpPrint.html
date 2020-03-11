@@ -1,0 +1,305 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <title>电子病历</title>
+<style>
+
+</style>
+  </head>
+  <body>
+  <ul class="tf-context-menu" style="display: none;">
+	<li onclick="print()">打印</li>
+</ul>
+
+    <div id="app"></div>
+	<div class="printpage" id="printpage">
+	    <link rel="stylesheet" href="/css/element-ui/lib/theme-chalk/index.css" />
+	    <style>
+	    	.tf-page-footer{
+	    		text-align: center;
+	    	}
+	    	 .toolbar {
+    margin: 0px auto;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    text-align: center;
+    background: #fff;
+    height: 40px;
+    z-index: 4;
+    padding: 10px;
+    box-sizing: border-box
+      }
+	  body.continute{
+	     
+	  }
+	
+	  p, body {
+    margin: 0;
+    padding: 0px;
+    line-height: 22px;
+	  font-size:16px;
+	  font-family: "宋体";
+    word-break: break-all;
+}
+.tf-context-menu{
+	position: fixed;
+}
+	    		html,body{
+	    		height: 100%;
+	    	}
+	    	.tf-context-menu{
+	    		    border: 1px solid rgba(0,0,0,.2);
+	    		    margin: 0px;
+	    		    box-shadow: 0 2px 5px rgba(0, 0, 0, .5);
+	    		    padding: 0px;
+	    		    z-index: 100;
+	    	}
+	    	.tf-context-menu>li{
+	    		list-style: none;
+	    		display: block;
+	    		height: 35px;
+	    		line-height: 35px;
+	    		background-color: #fff;
+	    		width: 200px;
+	    		padding: 0px 20px;
+	    	}
+	    	.tf-context-menu>li:hover{
+	    		background-color: #4986EA;
+	    		color: #fff;
+	    	}
+		*{
+	        box-sizing: border-box;
+		}
+	    	body.printing table{
+	    		margin-top: 0px;
+	    	}
+	    		body.printing .toolbar{
+	    			display: none;
+	    		}
+	    		 	body.printing .zz{
+	    			   background-color: #fff;
+              opacity: 1;
+	    		}
+      iframe {
+        display: block;
+        width: 1px;
+        position: absolute;
+        border: none;
+        height: 1px;
+      }
+      #main{
+        width: 13cm;
+        position: relative;
+      }
+      table {
+        width: 13cm;
+        margin: auto;
+        font-family: "宋体";
+		
+      }
+      .mt{
+      	margin-top:40px;
+      }
+      .footerTitle {
+        display: block;
+        text-align: center;
+      }
+      .headerTitle {
+        display: block;
+      }
+      .headerTitle h1 {
+        text-align: center;
+        margin: 0px;
+        line-height: 30px;
+      }
+      .headerTitle .info div {
+        display: inline-block;
+        text-align: center;
+        margin: 0px 5px;
+      }
+      .headerTitle .info {
+        margin: 20px 0;
+        text-align: center;
+      }
+      b{
+        font-weight: bold;
+      }
+	  .printpage{
+	    position:relative;
+	  }
+	  .zz{
+	      position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    height: 0px;
+    background: blue;
+    z-index: 2;
+    opacity: .5;
+	  }
+      strong,b{
+        font-weight: normal;
+        text-shadow: 1px 0px 0px;
+        -webkit-text-stroke: 1.0px #000000
+      }
+      /* @page {
+        size: A5;
+        margin: 10%;
+
+        @bottom-center {
+          content: "Page " counter(page);
+        }
+      } */
+    </style>
+	  <div class="zz"></div>
+	  <div class="tf-print">
+	  	
+	  </div>
+	  <div style="height: 0px;overflow: hidden;">
+    <table class="mt">
+      <thead class="headerTitle">
+        <tr>
+          <td>
+            <h1>天津市胸科医院急诊病历</h1>
+            <div class="info">
+              <div>姓名: <span class="name">许素芹</span></div>
+              <div>性别: <span class="sex">女</span></div>
+              <div>年龄: <span class="age">32</span></div>
+              <div>科室:急诊</div>
+              <div>就诊号: <span class="visitHisCode">32323</span></div>
+            </div>
+            <hr>
+          </td>
+        </tr>
+      </thead>
+      </table>
+      <table>
+      <tbody>
+        <tr>
+          <td>
+   <div id="main"></div>
+          </td>
+        </tr>
+      </tbody>
+     
+    </table>
+  </div>
+	  </div>
+  </body>
+  <script src="/js/jquery/1.12.4/jquery.min.js"></script>
+    <script src="/js/jqPrint/jquery.jqprint-0.3.js"></script>
+  <script>
+
+ 
+    (function() {
+     $(document).on("click","body",function(e){
+    	 	$(".tf-context-menu").hide();
+    	 })
+    		 $(document).on("contextmenu","body",function(e){
+    		 	$(".tf-context-menu").show().css({top:event.clientY+"px",left:event.clientX+"px"})
+
+      e.preventDefault();
+	 })
+//  		 $.each($("#main p"),function(){
+//  		 	$(this).text()
+//  		 	  console.log();
+//  		 });
+
+//  	currentPage.append($(".mt").clone());
+////  	currentPage.append($("#main>div")[0].firstChild.cloneNode());
+//  	var sourceNode=$("#main>div")[0];
+//  	var cloneNode=sourceNode.cloneNode();
+//  	currentPage[0].appendChild(cloneNode);
+//  	var i=0;
+//  	while(i<50){
+//  		if(sourceNode.firstChild){
+//  			cursor=sourceNode.cloneNode();
+//  			sourceNode=sourceNode.firstChild
+//  		}else if(sourceNode.nextSibling){
+//  			cursor=cursor.parentNode;
+//  			sourceNode=sourceNode.nextSibling
+//  		}else{
+//  			sourceNode=sourceNode.parentNode.nextSibling;
+//  			cursor=currentPage[0];
+//  		}
+//  		i++;
+//  		cursor.appendChild(sourceNode.cloneNode());
+//  	}
+      var iframes = [];
+      function getIframes() {
+        iframes = JSON.parse(sessionStorage.getItem("printAll"));
+      }
+      function showPage(html) {
+        $("#app").html(html);
+      }
+      function createHtml() {
+        const html = iframes.map(item => {
+          item.context =
+            "<script>var req=" +
+            JSON.stringify(item.req) +
+            ";var baseConfig={isInit: 1,isPrint: 1}" +
+            "</" +
+            "script>" +
+            item.context;
+          return $("<iframe>").attr("srcdoc", item.context);
+        });
+        return html;
+      }
+      function setValue(){
+        const currentPatient = sessionStorage.getItem('currentPatient') ? JSON.parse(sessionStorage.getItem('currentPatient')) : {};
+        $('.name').html(currentPatient.name);
+        $('.sex').html(currentPatient.gender==1?'男':'女');
+        $('.age').html(currentPatient.age);
+        $('.visitHisCode').html(currentPatient.visitHisCode);
+      }
+      function setIframeHeight(e) {
+        const iframe = e.target;
+        if (iframe) {
+          const iframeWin =
+            iframe.contentWindow || iframe.contentDocument.parentWindow;
+          if (iframeWin.document.body) {
+            // iframe.height = $(iframeWin.document.body).find('#app').height()+50;
+            iframeWin.document.body.style.fontSize = "14px";
+            iframeWin.document.body.style.fontFamily = "宋体";
+            if (iframeWin.vApp) {
+              iframeWin.vApp.baseConfig.isPrint = 1;
+            }
+          }
+        }
+      }
+      function main() {
+        getIframes();
+       
+        showPage(createHtml());
+        var time = setTimeout(function() {
+          items = [];
+          $("iframe").each(function(i, item) {
+            setIframeHeight({ target: item });
+            items.push(
+              $(item.contentWindow.document.body)
+                .find("#app")
+                .html().replace(/\〔/g,'').replace(/请选择/g,'').replace(/\〕/g,'')//.replace(/  /g,'')
+            );
+          });
+          $("#main").html(items);
+          var rowNum=Math.round($("#main").height()/parseFloat(isNaN($("#main").css('line-height'))?16:$("#main").css('line-height')));
+          console.log(rowNum);
+          extractDocument(document.getElementById("main"));
+					$("#main")[0].innerHTML=$("#main")[0].innerHTML.replace(/#/g,"<span>").replace(/\^/g,"</span>");
+					aaa();
+					   previewPage();
+   continuePrint();
+           setValue();
+        }, 2000);
+      }
+      main();
+    })();
+	
+  </script>
+</html>

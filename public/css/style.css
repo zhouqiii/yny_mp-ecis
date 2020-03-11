@@ -1,0 +1,39 @@
+body{
+    margin: 0;
+}
+a,body,h1,h2,h3,h4,h5,h6{
+    font-size: 14px;
+    font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+}
+.el-input__inner {
+    border: none;
+    border-radius: 0px;
+    border-bottom: 1px solid #ddd;
+}
+.el-scrollbar__wrap {
+    overflow-x: hidden!important;
+}
+.el-select-dropdown .el-scrollbar__wrap, .el-table .el-scrollbar__wrap{
+    overflow-x: scroll!important;
+}
+.el-select, .el-date-editor.el-input {
+    width: 100%;
+}
+.el-select .el-input__inner{
+    width: 100%;
+}
+.el-table--striped .el-table__body tr.el-table__row--striped.current-row td, .el-table__body tr.current-row>td, .el-table__body tr.hover-row.current-row>td, .el-table__body tr.hover-row.el-table__row--striped.current-row>td, .el-table__body tr.hover-row.el-table__row--striped>td, .el-table__body tr.hover-row>td{
+    background-color: #efc078;
+}
+.el-table--enable-row-hover .el-table__body tr:hover>td{
+    background-color: #efc078;
+}
+.dg.ac{
+    visibility: hidden;
+}
+.callInfo .el-button--mini.text-color-red{
+  background-color: #a71414;
+}
+.callInfo .el-button--mini.text-color-blue{
+  background-color: #4ba4ff;
+}

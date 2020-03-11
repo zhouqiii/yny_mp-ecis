@@ -1,0 +1,119 @@
+<!-- 引入样式 -->
+<link rel="stylesheet" href="/css/element-ui/lib/theme-chalk/index.css" />
+<link rel="stylesheet" href="/css/tmpApp.css" />
+<div id="app">
+  <template>
+    <h1 class="is_center">天津市胸科医院<br />抗凝治疗同意书</h1>
+    <table style="width:100%;" cellpadding="0" cellspacing="0" align="center">
+        <tbody>
+          <tr>
+            <td style="text-align:center;width:9%;">
+              <span style="font-size:16px;">姓名:</span>
+            </td>
+            <td style="text-align:center;width:10%;">
+              <span id="name" style="font-size:16px;">
+                <span v-if="baseConfig.isPrint">{{form.name}}</span>
+                <el-input v-model="form.name" placeholder="请填写" v-if="!baseConfig.isPrint"></el-input>
+              </span>
+            </td>
+            <td style="text-align:center;width:9%;">
+              <span style="font-size:16px;">性别:</span>
+            </td>
+            <td style="text-align:center;width:8%;">
+              <span style="font-size:16px;">
+                <span v-if="baseConfig.isPrint">{{dictF('sex',form.gender)}}</span>
+                <el-select v-model="form.gender" placeholder="" v-if="!baseConfig.isPrint">
+                  <el-option :value="item.value" :label="item.label" v-for="(item,i) in dictF('sex','all')" :key="i"></el-option>
+                </el-select>
+              </span>
+            </td>
+            <td style="text-align:center;width:9%;">
+              <span style="font-size:16px;">年龄:</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    <el-form ref="form" :model="form" label-width="80px">
+      <el-form-item label="诊断">
+          <span v-if="baseConfig.isPrint">{{form.diagnosis}}</span>
+        <el-input v-model="form.diagnosis" type="textarea" :rows="4" placeholder="请填写" v-if="!baseConfig.isPrint">
+        </el-input>
+      </el-form-item>
+    </el-form>
+    <el-form ref="form" :inline="true" :model="form" label-width="120px" class="is_center">
+        <el-form-item label="">
+            <span v-if="baseConfig.isPrint" v-html="form.text"></span>
+            <t-edit v-model="form.text" v-if="!baseConfig.isPrint" type="textarea" :rows="4">
+            </t-edit>
+        </el-form-item>
+    </el-form>
+    <el-form ref="form" :inline="true" :model="form" label-width="120px" class="is_center">
+        <el-form-item label="">
+            <span v-if="baseConfig.isPrint" v-html="form.text2"></span>
+            <t-edit v-model="form.text2" v-if="!baseConfig.isPrint" type="textarea" :rows="4">
+            </t-edit>
+        </el-form-item>
+    </el-form>
+    <el-form ref="form" :inline="true" :model="form" label-width="210px">
+        <el-form-item label="患方签字:" >
+          <span v-if="baseConfig.isPrint">{{form.name3}}</span>
+          <el-input v-model="form.name3" placeholder="请填写" v-if="!baseConfig.isPrint"></el-input>
+        </el-form-item>
+        <el-form-item label="医方签字:">
+            <div class="is_input" v-if="baseConfig.isPrint">{{form.re}}</div>
+            <el-input v-model="form.re" placeholder="请填写" v-if="!baseConfig.isPrint"></el-input>
+          </el-form-item>
+    </el-form>
+    <el-form ref="form" :inline="true" :model="form" label-width="210px">
+        <el-form-item label="身份证号" >
+          <span v-if="baseConfig.isPrint">{{form.idcard}}</span>
+          <el-input v-model="form.idcard" placeholder="请填写" v-if="!baseConfig.isPrint"></el-input>
+        </el-form-item>
+    </el-form>
+    <el-form ref="form" :model="form" label-width="210px" :inline="true" >
+        <el-form-item label="与患者关系:">
+          <div class="is_input" v-if="baseConfig.isPrint">{{form.relationship}}</div>
+          <el-input v-model="form.relationship" placeholder="请填写" v-if="!baseConfig.isPrint"></el-input>
+        </el-form-item>
+      </el-form>
+      <el-form ref="form" :model="form" label-width="210px" :inline="true" >
+          <el-form-item label="日期:">
+              <div class="is_input" v-if="baseConfig.isPrint">{{form.time}}</div>
+              <el-date-picker v-model="form.time" type="datetime" placeholder="选择日期" v-if="!baseConfig.isPrint"
+              format="yyyy年MM月dd日">
+              </el-date-picker>
+          </el-form-item>
+      </el-form>
+  </template>
+</div>
+
+<script src="/js/jquery/1.12.4/jquery.min.js"></script>
+<script src="/js/vue/2.6.6/vue.min.js"></script>
+<script src="/js/element-ui/lib/theme-chalk/index.js"></script>
+<script src="/js/babel-standalone/7.0.0-beta.3/babel.min.js"></script>
+<script src="/ueditor1_4_3_3/ueditor.config.js" charset="utf-8"></script>
+<script src="/ueditor1_4_3_3/ueditor.all.min.js" charset="utf-8"></script>
+<script src="/js/tmpVuePlugin.js" type="text/babel"></script>
+<script src="/js/tmpEvent.js" type="text/babel"></script>
+<script src="/js/tmpApp.js" type="text/babel"></script>
+<script type="text/babel">
+  const controlData = new ControlData();
+	class TmpVue extends TmpApp {
+		init() {
+      this.req.time = new Date().format('yyyy-MM-dd');
+      this.req.hospitali = `天津市胸科医院`;
+      this.req.text = `患者姓名____,性别____,年龄____岁,主因_________________于______年___月___日来我院急诊就诊,诊断为____________,现患者_________________。`;
+      this.req.text2 = `患者处于欠费状态,现因患者家庭困难,暂时无力偿还欠费,向我院
+申请分期交付所欠医疗费用,我院予以批准,具体内容如下:<br/>
+一、院方同意患方分期交付住院期间所欠医疗费用的申请。<br/>
+二、院方同意该申请是基于患方家庭困难,与医疗诊疗无关。<br/>
+三、患者目前急诊费用为全额垫付。<br/>
+四、患方承诺于____年__月__日前将所欠医疗费用全部还清,且院方可
+以随时向患方追要所欠医疗费用,包括采取法律等相关途径处理,本
+协议不作为患方拒绝交付欠费的理由。<br/>
+五、本协议的最终解释权归院方所属,院方有权随时终止本协议,患方无
+权提出任何异议。<br/>`;
+    }
+  }
+	new TmpVue().createVue();
+</script>

@@ -1,0 +1,30 @@
+{
+  "defaultSeverity": "warning",
+  "extends": [
+    "tslint:recommended"
+  ],
+  "linterOptions": {
+    "exclude": [
+      "node_modules/**"
+    ],
+    "include": [
+      "src/**/*.ts"
+    ]
+  },
+  "rules": {
+    "quotemark": [true, "single"],
+    "indent": [true, "spaces", 2],
+    "interface-name": false,
+    "ordered-imports": false,
+    "object-literal-sort-keys": false,
+    "no-consecutive-blank-lines": false,
+    "ban-comma-operator":false,
+    "trailing-comma": false,
+    "no-unnecessary-initializer": false,
+    "object-literal-key-quotes": [false, "as-needed"],
+    "jsdoc-format": false,
+    "no-angle-bracket-type-assertion":false,
+    "whitespace":false,
+    "one-variable-per-declaration": false
+  }
+}

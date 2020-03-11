@@ -1,0 +1,157 @@
+package com.innocloud.mpx.his.service.impl;
+
+import com.innocloud.mpx.his.service.HisPatientPrescriptionItemService;
+import com.pig4cloud.pigx.admin.api.entity.*;
+import com.pig4cloud.pigx.admin.api.feign.RemoteCoreService;
+import com.pig4cloud.pigx.admin.api.feign.RemoteUserService;
+import com.pig4cloud.pigx.common.core.util.Pinyin4j;
+import com.pig4cloud.pigx.common.core.util.SpringContextHolder;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Component
+@AllArgsConstructor
+public class HisSyncServiceImpl implements Runnable{
+//	final HisPatientService hisPatientService;
+//	final HisPatientVisitService hisPatientVisitService;
+	final HisPatientPrescriptionItemService hisPatientPrescriptionItemService;
+
+//	HisPatientService hisPatientService = new HisPatientServiceImpl();
+//	HisPatientVisitService hisPatientVisitService = new HisPatientVisitServiceImpl();
+	// HisPatientPrescriptionItemService hisPatientPrescriptionItemService = new HisPatientPrescriptionItemServiceImpl();
+	public void run(){
+		try {
+			{
+				List<PatientVisit> patientVisitList = SpringContextHolder.getBean(RemoteCoreService.class).getPatientVisitListActiveObj();
+				List<SysUser> sysUserList = SpringContextHolder.getBean(RemoteUserService.class).listDoctorData();
+
+				List<MedicineOffer> medicineOfferList = SpringContextHolder.getBean(RemoteCoreService.class).getMedicineOfferList();
+				List<PatientPrescription> patientPrescriptionList = SpringContextHolder.getBean(RemoteCoreService.class).getPatientPrescriptionList();
+				List<PatientPrescriptionItem> patientPrescriptionItemList = SpringContextHolder.getBean(RemoteCoreService.class).getPatientPrescriptionItemList();
+
+				List<SysDict> sysDictList = SpringContextHolder.getBean(RemoteUserService.class).listDict().getData();
+				Map<String, SysDict> sysDictMap = new HashMap<>();
+
+				Map<String, MedicineOffer> medicineOfferMap = new HashMap<>();
+				Map<String, PatientPrescription> patientPrescriptionMap = new HashMap<>();
+				Map<String, PatientPrescriptionItem> patientPrescriptionItemMap = new HashMap<>();
+
+				for (SysDict sysDict: sysDictList
+				) {
+					sysDictMap.put(sysDict.getLabel() + sysDict.getType(), sysDict);
+				}
+
+				for (MedicineOffer medicineOffer: medicineOfferList
+				) {
+					medicineOfferMap.put(medicineOffer.getHisCode(), medicineOffer);
+				}
+
+				for (PatientPrescription patientPrescription: patientPrescriptionList
+				) {
+					patientPrescriptionMap.put(patientPrescription.getPatientPrescriptionHisCode(), patientPrescription);
+				}
+
+				for (PatientPrescriptionItem patientPrescriptionItem: patientPrescriptionItemList
+				) {
+					patientPrescriptionItemMap.put(patientPrescriptionItem.getPatientPrescriptionId().toString(), patientPrescriptionItem);
+				}
+
+				Map<String, SysUser> sysUserMap = new HashMap<>();
+				for (SysUser sysUser: sysUserList
+				) {
+					sysUserMap.put(sysUser.getUsername(), sysUser);
+				}
+
+				Pinyin4j pinyin4j = new Pinyin4j();
+
+				//循环处理所有活动状态的病人来访
+				for (PatientVisit patientVisit: patientVisitList
+				) {
+					//获取该次访问的医嘱列表
+					List<HisPatientPrescriptionItem> hisPatientPrescriptionItemList = hisPatientPrescriptionItemService.getListByVisitHisCode(patientVisit.getHisCode());
+
+					//循环处理每个医嘱
+					for (HisPatientPrescriptionItem hisPatientPrescriptionItem: hisPatientPrescriptionItemList
+					) {
+
+						SysUser sysUser = sysUserMap.get(hisPatientPrescriptionItem.getDoctorId());
+						//如果医生不存在则添加, his doctorId 存储的实际是名字
+						if (sysUser == null){
+							sysUser = new SysUser();
+							sysUser.setUsername(hisPatientPrescriptionItem.getDoctorId());
+							sysUser = SpringContextHolder.getBean(RemoteUserService.class).user(sysUser).getData();
+							sysUserMap.put(hisPatientPrescriptionItem.getDoctorId(),sysUser);
+						}
+
+						//如果药品信息不存在则添加
+						MedicineOffer medicineOffer = medicineOfferMap.get(hisPatientPrescriptionItem.getMedicineOfferHisCode());
+						if(medicineOffer == null) {
+							MedicineProduct medicineProduct = new MedicineProduct();
+							medicineProduct.setHisCode(hisPatientPrescriptionItem.getMedicineOfferHisCode());
+							medicineProduct.setNameCn(hisPatientPrescriptionItem.getMedicineOfferHisName());
+							medicineProduct.setNamePinyin(pinyin4j.toPinYinUppercase(hisPatientPrescriptionItem.getMedicineOfferHisName()));
+							medicineProduct = SpringContextHolder.getBean(RemoteCoreService.class).saveWithObj(medicineProduct).getData();
+
+							medicineOffer = new MedicineOffer();
+							medicineOffer.setHisCode(hisPatientPrescriptionItem.getMedicineOfferHisCode());
+							medicineOffer.setMedicineProductId(medicineProduct.getId());
+
+							medicineOffer = SpringContextHolder.getBean(RemoteCoreService.class).saveWithObj(medicineOffer).getData();
+							medicineOfferMap.put(hisPatientPrescriptionItem.getMedicineOfferHisCode(), medicineOffer);
+						}
+
+						//如果医嘱不存在则增加
+						PatientPrescription patientPrescription = patientPrescriptionMap.get(hisPatientPrescriptionItem.getPatientPrescriptionHisCode());
+						if (patientPrescription == null){
+							patientPrescription = new PatientPrescription();
+							patientPrescription.setDoctorId(sysUser.getUserId());
+							patientPrescription.setIfPaid(1);
+							patientPrescription.setStatus("0");
+							patientPrescription.setVisitId(patientVisit.getId());
+							patientPrescription = SpringContextHolder.getBean(RemoteCoreService.class).saveWithObj(patientPrescription).getData();
+						}
+
+
+						PatientPrescriptionItem patientPrescriptionItem = patientPrescriptionItemMap.get(hisPatientPrescriptionItem.getPatientPrescItemHisCode());
+						if(patientPrescriptionItem == null){
+							SysDict usageMethodDict = sysDictMap.get(hisPatientPrescriptionItem.getUsageMethod() + "usageMethod");
+							SysDict medicineSpeedDict = sysDictMap.get(hisPatientPrescriptionItem.getSpeed() + "medicineSpeed");
+							SysDict medicineFrequencyDict = sysDictMap.get(hisPatientPrescriptionItem.getFrequency() + "medicineFrequency");
+							SysDict medicineUnitDict = sysDictMap.get(hisPatientPrescriptionItem.getUnit() + "medicineUnit");
+							SysDict accountingUnitDict = sysDictMap.get(hisPatientPrescriptionItem.getAccountingUnit() + "packageUnit");
+
+							if(usageMethodDict == null || medicineSpeedDict == null || medicineFrequencyDict == null || medicineUnitDict == null || accountingUnitDict == null){
+								System.out.println("can not find conresponding dict hisPatientPrescriptionItem:" + hisPatientPrescriptionItem.getPatientPrescItemHisCode());
+								break;
+							}
+							patientPrescriptionItem = new PatientPrescriptionItem(hisPatientPrescriptionItem);
+							patientPrescriptionItem.setVisitId(patientVisit.getId());
+							patientPrescriptionItem.setPatientPrescriptionId(patientPrescription.getId());
+							patientPrescriptionItem.setMedicineOfferId(medicineOffer.getId());
+							patientPrescriptionItem.setGroupId(Integer.parseInt(hisPatientPrescriptionItem.getGroupId()));
+							patientPrescriptionItem.setUsageMethod(usageMethodDict.getValue());
+							patientPrescriptionItem.setSpeed(medicineSpeedDict.getValue());
+							patientPrescriptionItem.setFrequency(medicineFrequencyDict.getValue());
+							patientPrescriptionItem.setUnit(medicineUnitDict.getValue());
+							patientPrescriptionItem.setAccountingUnit(accountingUnitDict.getValue());
+							patientPrescriptionItem = SpringContextHolder.getBean(RemoteCoreService.class).saveWithObj(patientPrescriptionItem).getData();
+							for(int i = 0; i < patientPrescriptionItem.getDosageCount();++i){
+								PatientPrescriptionxItemSplit patientPrescriptionxItemSplit = new PatientPrescriptionxItemSplit(patientPrescriptionItem);
+								patientPrescriptionxItemSplit.setPatientPrescriptionItemId(patientPrescriptionItem.getId());
+								SpringContextHolder.getBean(RemoteCoreService.class).saveWithObj(patientPrescriptionxItemSplit);
+							}
+						}
+					}
+				}
+
+			}
+			Thread.sleep(3000);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+}

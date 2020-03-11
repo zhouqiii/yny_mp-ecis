@@ -1,0 +1,294 @@
+<!-- 引入样式 -->
+<link rel="stylesheet" href="/css/element-ui/lib/theme-chalk/index.css" />
+<link rel="stylesheet" href="/css/tmpApp.css" />
+<div id="app">
+  <template>
+    <h1 class="is_center">天津市胸科医院<br />彩色多普勒床旁超声报告单</h1>
+    <el-form ref="form" :inline="true" :model="form" label-width="80px">
+      <el-form-item label="姓名" style="width:calc(33.3% - 100px)">
+        <span>{{form.name}}</span>
+      </el-form-item>
+      <el-form-item label="性别" style="width:calc(33.3% - 100px)">
+        <span v-if="baseConfig.isPrint">{{dictF('sex',form.gender)}}</span>
+      </el-form-item>
+      <el-form-item label="年龄" style="width:calc(33.3% - 100px)">
+        <span>{{form.age}}</span>
+      </el-form-item>
+      <el-form-item label="临床科室" style="width:calc(33.3% - 100px)">
+        <span v-if="baseConfig.isPrint">{{deptById.name}}</span>
+        <el-cascader :options="deptData" :props="deptDataProps" v-model="form.departmentId" v-if="!baseConfig.isPrint">
+        </el-cascader>
+        </el-input>
+      </el-form-item>
+      <el-form-item label="检查部位" style="width:calc(33.3% - 100px)">
+        <span v-if="baseConfig.isPrint">{{form.jianchabuwei}}</span>
+        <el-input v-model="form.jianchabuwei" placeholder="请填写" v-if="!baseConfig.isPrint"></el-input>
+        </el-input>
+      </el-form-item>
+      <el-form-item label="住院号" style="width:calc(33.3% - 100px)">
+        <span>{{form.hisCode}}</span>
+        </el-input>
+      </el-form-item>
+    </el-form>
+    <el-form ref="form" :model="form" label-width="0px">
+      <el-form-item>
+        <h3>床旁超声</h3>
+        <table cellpadding="0" cellspacing="0"
+          style='width:100%;border-collapse:collapse;table-layout:fixed; border: 1px solid;'>
+          <tr style='height:55.00pt;'>
+            <td class="xl65" height="154.67" width="260" colspan="2" rowspan="2"
+              style='height:116.00pt;width:195.00pt;border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;'
+              x:str>心腔大小</td>
+            <td class="xl66" width="815"
+              style='width:611.25pt;border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>
+              左房<span style='mso-spacerun:yes;'>
+
+                <span v-if="baseConfig.isPrint">{{form.PatientBedsideBUltrasonic.leftAtrium}}</span>
+                <el-input v-model="form.PatientBedsideBUltrasonic.leftAtrium" style="width:100px" placeholder="请填写" v-if="!baseConfig.isPrint">
+                </el-input>
+
+              </span>&nbsp;&nbsp;&nbsp;&nbsp;mm<span style='mso-spacerun:yes;'>&nbsp;&nbsp; </span>右房<span
+                style='mso-spacerun:yes;'>
+                <span v-if="baseConfig.isPrint">{{form.PatientBedsideBUltrasonic.rightAtrium}}</span>
+                <el-input v-model="form.PatientBedsideBUltrasonic.rightAtrium" style="width:100px" placeholder="请填写" v-if="!baseConfig.isPrint">
+                </el-input>
+
+              </span>&nbsp;&nbsp;&nbsp;&nbsp;mm</td>
+          </tr>
+          <tr height="81.33" style='height:61.00pt;mso-height-source:userset;mso-height-alt:1220;'>
+            <td class="xl66" x:str style="border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;">
+              左室<span style='mso-spacerun:yes;'>
+                <span v-if="baseConfig.isPrint">{{form.PatientBedsideBUltrasonic.leftVentricle}}</span>
+                <el-input v-model="form.PatientBedsideBUltrasonic.leftVentricle" style="width:100px" placeholder="请填写" v-if="!baseConfig.isPrint">
+                </el-input>
+              </span>&nbsp;&nbsp;&nbsp;&nbsp;mm<span style='mso-spacerun:yes;'>&nbsp;&nbsp; </span>右室<span
+                style='mso-spacerun:yes;'>
+                <span v-if="baseConfig.isPrint">{{form.PatientBedsideBUltrasonic.rightVentricle}}</span>
+                <el-input v-model="form.PatientBedsideBUltrasonic.rightVentricle" style="width:100px" placeholder="请填写" v-if="!baseConfig.isPrint">
+                </el-input>
+              </span>&nbsp;&nbsp;&nbsp;&nbsp;mm
+            </td>
+          </tr>
+          <tr height="64" style='height:48.00pt;mso-height-source:userset;mso-height-alt:960;'>
+            <td class="xl65" height="64" colspan="2"
+              style='height:48.00pt;border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>室壁厚度
+            </td>
+            <td class="xl66" x:str style="border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;">
+              <el-radio v-model="form.PatientBedsideBUltrasonic.ventricularWallThickness" label="1">正常</el-radio>
+              <el-radio v-model="form.PatientBedsideBUltrasonic.ventricularWallThickness" label="2">增厚</el-radio>
+              <el-radio v-model="form.PatientBedsideBUltrasonic.ventricularWallThickness" label="3">部分变薄</el-radio>
+            </td>
+          </tr>
+          <tr height="93.33" style='height:70.00pt;mso-height-source:userset;mso-height-alt:1400;'>
+            <td class="xl65" height="93.33" colspan="2"
+              style='height:70.00pt;border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>室壁运动
+            </td>
+            <td class="xl66" x:str style="border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;">
+              <el-radio v-model="form.PatientBedsideBUltrasonic.ventricularWallMotion" label="1">正常</el-radio>
+              <el-radio v-model="form.PatientBedsideBUltrasonic.ventricularWallMotion" label="2">部分减分</el-radio>
+              <el-radio v-model="form.PatientBedsideBUltrasonic.ventricularWallMotion" label="3">广泛减低</el-radio>
+              <span style='mso-spacerun:yes;'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>估测EF
+              <span v-if="baseConfig.isPrint">{{form.PatientBedsideBUltrasonic.ventricularWallMotionEf}}</span>
+              <el-input v-model="form.PatientBedsideBUltrasonic.ventricularWallMotionEf" style="width:100px" placeholder="请填写" v-if="!baseConfig.isPrint">
+              </el-input>%
+            </td>
+          </tr>
+          <tr height="96" style='height:72.00pt;mso-height-source:userset;mso-height-alt:1440;'>
+            <td class="xl65" height="354.67" rowspan="5"
+              style='height:266.00pt;border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>瓣膜情况
+            </td>
+            <td class="xl65" rowspan="2" style='border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;'
+              x:str>二尖瓣</td>
+            <td class="xl67" x:str style="border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;">
+                <el-checkbox-group v-model="form.PatientBedsideBUltrasonic.mitralValve">
+                  <el-checkbox label="正常"></el-checkbox>
+                  <el-checkbox label="钙化"></el-checkbox>
+                  <el-checkbox label="狭窄"></el-checkbox>
+                  (<el-radio v-model="form.PatientBedsideBUltrasonic.mitralValveStenosis" label="1">轻度</el-radio>
+                  <el-radio v-model="form.PatientBedsideBUltrasonic.mitralValveStenosis" label="2">中度以上</el-radio>)
+                  <el-checkbox label="反流"></el-checkbox>
+                  (
+                    <el-radio v-model="form.PatientBedsideBUltrasonic.mitralValveRegurgitation" label="1">未见</el-radio>
+                    <el-radio v-model="form.PatientBedsideBUltrasonic.mitralValveRegurgitation" label="2">轻度</el-radio>
+                  <el-radio v-model="form.PatientBedsideBUltrasonic.mitralValveRegurgitation" label="3">中度以上</el-radio>)
+                </el-checkbox-group>
+                <el-input v-model="form.PatientBedsideBUltrasonic.mitralValveEa" style="width:100px" placeholder="请填写" v-if="!baseConfig.isPrint">
+                  </el-input>E/A
+                  <el-input v-model="form.PatientBedsideBUltrasonic.mitralValveTdi" style="width:100px" placeholder="请填写" v-if="!baseConfig.isPrint">
+                    </el-input>TDIe/a
+            </td>
+          </tr>
+          <tr height="68" style='height:51.00pt;mso-height-source:userset;mso-height-alt:1020;'>
+            <td class="xl67" style="border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;" x:str>
+              人工瓣：前向血流速<span style='mso-spacerun:yes;'>
+                <!-- <span v-if="baseConfig.isPrint">{{form.rengongban}}</span> -->
+                <el-input v-model="form.PatientBedsideBUltrasonic.prostheticMitralValveForwardFlowVelocity" style="width:100px" placeholder="请填写"
+                  v-if="!baseConfig.isPrint"></el-input>
+              </span>m/s
+              <el-radio v-model="form.PatientBedsideBUltrasonic.prostheticMitralValveRegurgitation" label="1">未见反流</el-radio>
+              <el-radio v-model="form.PatientBedsideBUltrasonic.prostheticMitralValveRegurgitation" label="2">中心反流</el-radio>
+              <el-radio v-model="form.PatientBedsideBUltrasonic.prostheticMitralValveRegurgitation" label="3">瓣周反流</el-radio>
+            </td>
+          </tr>
+          <tr height="61.33" style='height:46.00pt;mso-height-source:userset;mso-height-alt:920;'>
+            <td class="xl65" rowspan="2" style='border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;'
+              x:str>主动脉瓣</td>
+            <td class="xl66" x:str style="border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;">
+                <el-checkbox-group v-model="form.PatientBedsideBUltrasonic.aorticValve">
+                    <el-checkbox label="正常"></el-checkbox>
+                    <el-checkbox label="钙化"></el-checkbox>
+                    <el-checkbox label="狭窄"></el-checkbox>
+                    (<el-radio v-model="form.PatientBedsideBUltrasonic.aorticValveStenosis" label="1">轻度</el-radio>
+                    <el-radio v-model="form.PatientBedsideBUltrasonic.aorticValveStenosis" label="2">中度以上</el-radio>)
+                    <el-checkbox label="反流"></el-checkbox>
+                    (
+                      <el-radio v-model="form.PatientBedsideBUltrasonic.aorticValveRegurgitation" label="1">未见</el-radio>
+                      <el-radio v-model="form.PatientBedsideBUltrasonic.aorticValveRegurgitation" label="2">轻度</el-radio>
+                    <el-radio v-model="form.PatientBedsideBUltrasonic.aorticValveRegurgitation" label="3">中度以上</el-radio>)
+                  </el-checkbox-group>
+                  <el-input v-model="form.PatientBedsideBUltrasonic.prostheticAorticValveForwardFlowVelocity" style="width:100px" placeholder="请填写" v-if="!baseConfig.isPrint">
+                    </el-input>E/A
+                    <el-input v-model="form.PatientBedsideBUltrasonic.prostheticAorticValveRegurgitation" style="width:100px" placeholder="请填写" v-if="!baseConfig.isPrint">
+                      </el-input>TDIe/a
+            </td>
+          </tr>
+          <tr height="66.67" style='height:50.00pt;mso-height-source:userset;mso-height-alt:1000;'>
+            <td class="xl66" x:str style="border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;">
+              人工瓣：前向血流速<span style='mso-spacerun:yes;'>
+                <span v-if="baseConfig.isPrint">{{form.PatientBedsideBUltrasonic.prostheticAorticValveForwardFlowVelocity}}</span>
+                <el-input v-model="form.PatientBedsideBUltrasonic.prostheticAorticValveForwardFlowVelocity" style="width:100px" placeholder="请填写"
+                  v-if="!baseConfig.isPrint"></el-input>
+              </span>m/s
+              <el-radio v-model="form.PatientBedsideBUltrasonic.prostheticAorticValveRegurgitation" label="1">未见反流</el-radio>
+              <el-radio v-model="form.PatientBedsideBUltrasonic.prostheticAorticValveRegurgitation" label="2">中心反流</el-radio>
+              <el-radio v-model="form.PatientBedsideBUltrasonic.prostheticAorticValveRegurgitation" label="3">瓣周反流</el-radio>
+            </td>
+          </tr>
+          <tr height="62.67" style='height:47.00pt;mso-height-source:userset;mso-height-alt:940;'>
+            <td class="xl65" x:str style="border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;">三尖瓣
+            </td>
+            <td class="xl66" x:str style="border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;">反流（
+                <el-radio v-model="form.PatientBedsideBUltrasonic.tricuspidValveRegurgitation" label="2">未见</el-radio>
+                <el-radio v-model="form.PatientBedsideBUltrasonic.tricuspidValveRegurgitation" label="1">轻度</el-radio>
+              <el-radio v-model="form.PatientBedsideBUltrasonic.tricuspidValveRegurgitation" label="2">中度以上</el-radio>
+              ）<span style='mso-spacerun:yes;'>&nbsp; </span>估测PAP<span style='mso-spacerun:yes;'>
+                <span v-if="baseConfig.isPrint">{{form.PatientBedsideBUltrasonic.tricuspidValveRegurgitationPap}}</span>
+                <el-input v-model="form.PatientBedsideBUltrasonic.tricuspidValveRegurgitationPap" style="width:100px" placeholder="请填写" v-if="!baseConfig.isPrint">
+                </el-input>
+              </span>mmHg</td>
+          </tr>
+          <tr height="52" style='height:39.00pt;mso-height-source:userset;mso-height-alt:780;'>
+            <td class="xl65" height="52" colspan="2"
+              style='height:39.00pt;border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>
+              心内异常分流</td>
+            <td class="xl66" x:str style="border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;">
+              <el-radio v-model="form.PatientBedsideBUltrasonic.intracardiacAbnormalShunt" label="1">未见</el-radio>
+              <el-radio v-model="form.PatientBedsideBUltrasonic.intracardiacAbnormalShunt" label="2">房水平</el-radio>
+              <el-radio v-model="form.PatientBedsideBUltrasonic.intracardiacAbnormalShunt" label="3">室水平</el-radio>
+              <el-radio v-model="form.PatientBedsideBUltrasonic.intracardiacAbnormalShunt" label="4">动脉水平</el-radio>
+              <el-radio v-model="form.PatientBedsideBUltrasonic.intracardiacAbnormalShunt" label="5">其他</el-radio>
+              <el-input v-model="form.PatientBedsideBUltrasonic.intracardiacAbnormalShuntOther" style="width:100px" placeholder="请填写" v-if="!baseConfig.isPrint">
+                </el-input>
+            </td>
+          </tr>
+          <tr height="52" style='height:39.00pt;mso-height-source:userset;mso-height-alt:780;'>
+            <td class="xl65" height="52" colspan="2"
+              style='height:39.00pt;border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>心包腔
+            </td>
+            <td class="xl66" x:str style="border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;">
+              <el-radio v-model="form.PatientBedsideBUltrasonic.pericardialCavity" label="1">正常</el-radio>
+              <el-radio v-model="form.PatientBedsideBUltrasonic.pericardialCavity" label="4">少量积液</el-radio>
+              <el-radio v-model="form.PatientBedsideBUltrasonic.pericardialCavity" label="2">中量及以上积液</el-radio>
+              <el-radio v-model="form.PatientBedsideBUltrasonic.pericardialCavity" label="3">其他</el-radio>
+            </td>
+          </tr>
+          <tr height="48" style='height:36.00pt;mso-height-source:userset;mso-height-alt:720;'>
+            <td class="xl65" height="48" colspan="2"
+              style='height:36.00pt;border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>胸腔积液
+            </td>
+            <td class="xl66" x:str style="border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;">
+              左（
+              <el-radio v-model="form.PatientBedsideBUltrasonic.pericardialCavityEffusion" label="1">未见</el-radio>
+              <el-radio v-model="form.PatientBedsideBUltrasonic.pericardialCavityEffusion" label="2">少量</el-radio>
+              <el-radio v-model="form.PatientBedsideBUltrasonic.pericardialCavityEffusion" label="3">中量及以上</el-radio>
+              <span v-if="baseConfig.isPrint">{{form.PatientBedsideBUltrasonic.leftPleuralEffusionAmount}}</span>
+              <el-input v-model="form.PatientBedsideBUltrasonic.leftPleuralEffusionAmount" style="width:100px" placeholder="请填写"
+                v-if="!baseConfig.isPrint">
+              </el-input>cm）
+            </td>
+          </tr>
+          <tr height="57.33" style='height:43.00pt;mso-height-source:userset;mso-height-alt:860;'>
+            <td class="xl66" height="57.33" style='height:43.00pt;'
+              style="border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;"></td>
+            <td class="xl66" style="border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;"></td>
+            <td class="xl66" x:str style="border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;">
+              右（<el-radio v-model="form.PatientBedsideBUltrasonic.rightPleuralEffusion" label="1">未见</el-radio>
+              <el-radio v-model="form.PatientBedsideBUltrasonic.rightPleuralEffusion" label="2">少量</el-radio>
+              <el-radio v-model="form.PatientBedsideBUltrasonic.rightPleuralEffusion" label="3">中量及以上</el-radio>
+              <span v-if="baseConfig.isPrint">{{form.PatientBedsideBUltrasonic.rightPleuralEffusionAmount}}</span>
+              <el-input v-model="form.PatientBedsideBUltrasonic.rightPleuralEffusionAmount" style="width:100px" placeholder="请填写"
+                v-if="!baseConfig.isPrint">
+              </el-input>cm）
+            </td>
+          </tr>
+        </table>
+      </el-form-item>
+    </el-form>
+    <el-form ref="form" :model="form" label-width="150px">
+      <el-form-item label=" 超声印象:">
+        <div class="is_input" v-if="baseConfig.isPrint">{{form.PatientBedsideBUltrasonic.ultrasoundImpression}}</div>
+        <t-edit v-model="form.PatientBedsideBUltrasonic.ultrasoundImpression" placeholder="请填写" v-if="!baseConfig.isPrint"></t-edit>
+      </el-form-item>
+    </el-form>
+    <el-form ref="form" :model="form" label-width="400px" :inline="true" class="is_right">
+      <el-form-item label="此报告仅供参考，不做判断依据  诊断医生:">
+        <div class="is_input" v-if="baseConfig.isPrint">{{form.PatientBedsideBUltrasonic.createdBy}}</div>
+        <el-input v-model="form.PatientBedsideBUltrasonic.createdBy" placeholder="请填写" v-if="!baseConfig.isPrint"></el-input>
+      </el-form-item>
+      <el-form-item label="检查日期:">
+        <div class="is_input" v-if="baseConfig.isPrint">{{form.PatientBedsideBUltrasonic.createdOn}}</div>
+        <el-date-picker v-model="form.PatientBedsideBUltrasonic.createdOn" type="datetime" placeholder="选择日期" v-if="!baseConfig.isPrint"
+          format="yyyy年MM月dd日"></el-date-picker>
+      </el-form-item>
+    </el-form>
+  </template>
+</div>
+
+<script src="/js/jquery/1.12.4/jquery.min.js"></script>
+<script src="/js/vue/2.6.6/vue.min.js"></script>
+<script src="/js/element-ui/lib/theme-chalk/index.js"></script>
+<script src="/js/babel-standalone/7.0.0-beta.3/babel.min.js"></script>
+<script src="/umditor/umeditor.config.js" charset="utf-8"></script>
+<script src="/umditor/umeditor.all.min.js" charset="utf-8"></script>
+<script src="/js/tmpVuePlugin.js" type="text/babel"></script>
+<script src="/js/tmpEvent.js" type="text/babel"></script>
+<script src="/js/tmpApp.js" type="text/babel"></script>
+<script type="text/babel">
+var $_GET = (function(){
+    var url = window.document.location.href.toString();
+    var u = url.split("?");
+    if(typeof(u[1]) == "string"){
+        u = u[1].split("&");
+        var get = {};
+        for(var i in u){
+            var j = u[i].split("=");
+            get[j[0]] = j[1];
+        }
+        return get;
+    } else {
+        return {};
+    }
+})();
+  window.req = JSON.parse(decodeURI($_GET.req));
+  window.req.PatientBedsideBUltrasonic = {};
+  window.accessToken = localStorage.getItem('access_token')
+  const controlData = new ControlData();
+	class TmpVue extends TmpApp {
+		init() {
+      window.req.PatientBedsideBUltrasonic.visitId = window.req.visitId;
+      window.req.PatientBedsideBUltrasonic.mitralValve = [];
+      window.req.PatientBedsideBUltrasonic.aorticValve = [];
+		}
+  }
+  new TmpVue().createVue();
+</script>

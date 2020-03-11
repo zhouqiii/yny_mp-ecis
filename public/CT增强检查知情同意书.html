@@ -1,0 +1,63 @@
+<!-- 引入样式 -->
+<link rel="stylesheet" href="/css/element-ui/lib/theme-chalk/index.css" />
+<link rel="stylesheet" href="/css/tmpApp.css" />
+<div id="app">
+  <template>
+    <h1 class="is_center">CT增强检查知情同意书</h1>
+    <el-row class="">
+      <el-col>
+          1、CTA检查需要注射对比剂,心、肝、肾功能不全者,急性胰腺炎、骨髓瘤、甲亢、
+          痛风、癫痫等患者慎做该项检查。<br/>
+          2、有碘过敏史者禁用:糖尿病患者服用二甲双狐需停药48小时后做该项检查,检
+          查完成后再停药72小时。<br/>
+          3、我院采用的对比剂均为经国家鉴定合格并由正规药厂出品的合格药品,但应用
+          对比剂仍可能产生各种不良反应(详见药品说明书)。<br/>
+          4、自身为过敏体质者应提前告知医师以权衡利弊决定是否进行本检查;非过敏体
+          质者,也有极少数患者会发生各种过敏反应,最严重者甚至会因过敏性休克导致死亡。<br/>
+          5、各种心律不齐,心率过快及呼吸配合不佳者,可能会影响检查质量(心脏、冠
+          状动脉等),甚至检查失败。<br/>
+          6、注射部位可能发生对比剂外渗、疤疹、破溃、感染,产生疼痛肿胀等,必要时
+          需要外科处理。<br/>
+          7、CTA检查有一定X线辐射,孕妇、育龄妇女、儿童检查前请告知医生。<br/>
+          8、对听力差、行为能力弱、语言交流有障碍者,须家属配合检查。<br/>
+          9、对病情严重者,CTA检查存在一定风险,如急性心肌梗死、肺栓塞、主动脉夹层
+          和重度肺动脉高血压等。
+      </el-col>
+      <el-col>
+        <b>患者及家属阅读后,如理解本项检查中可能存在的风险并愿意承担风
+险,同意施行本项检查,请签字。</b>
+      </el-col>
+    </el-row>
+    <el-form ref="form" :model="form" label-width="150px" :inline="true">
+      <el-form-item label="病人或家属签字:">
+        <div class="is_input" v-if="baseConfig.isPrint">{{form.dependents}}</div>
+        <el-input v-model="form.dependents" placeholder="请填写" v-if="!baseConfig.isPrint"></el-input>
+      </el-form-item>
+      <el-form-item class="is_right" style="width: calc(100% - 400px);">
+        <div class="is_input" v-if="baseConfig.isPrint">{{form.time}}</div>
+        <el-date-picker v-model="form.time" type="date" placeholder="选择日期" v-if="!baseConfig.isPrint" format="yyyy年MM月dd日">
+        </el-date-picker>
+      </el-form-item>
+    </el-form>
+  </template>
+</div>
+
+<script src="/js/jquery/1.12.4/jquery.min.js"></script>
+<script src="/js/vue/2.6.6/vue.min.js"></script>
+<script src="/js/element-ui/lib/theme-chalk/index.js"></script>
+<script src="/js/babel-standalone/7.0.0-beta.3/babel.min.js"></script>
+<script src="/ueditor1_4_3_3/ueditor.config.js" charset="utf-8"></script>
+<script src="/ueditor1_4_3_3/ueditor.all.min.js" charset="utf-8"></script>
+<script src="/js/tmpVuePlugin.js" type="text/babel"></script>
+<script src="/js/tmpEvent.js" type="text/babel"></script>
+<script src="/js/tmpApp.js" type="text/babel"></script>
+<script type="text/babel">
+  const controlData = new ControlData();
+	class TmpVue extends TmpApp {
+		init() {
+      this.req.diagnosis = `患者所患疾病,因病情需要应用抗凝治疗,可能出现出血可能,包括内脏出血,颅内出血,皮肤创口、血管针刺部位出血及血肿,近期外伤部位出血、血肿,眼底出血等,以及肝肾功能损伤,神经损害,严重时可危及生命。此外还可能出过敏皮肤,注射部位血肿、皮肤疼痛、灼痛、骚痒、红斑、坏死,及其他不可预料的副作用。请患者及家属了解以上情况,知情同意抗凝治疗并签字。`;
+      this.req.time = new Date().format('yyyy-MM-dd');
+		}
+  }
+	new TmpVue().createVue();
+</script>
