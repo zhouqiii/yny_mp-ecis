@@ -45,9 +45,10 @@ export default class LoginComp extends Vue {
         }]
     };
     public submitForm(formName: string) {
-        this.$store.dispatch('LoginByUsername', this.loginForm).then((d) => {
-            this.$router.push('/emergency');
-        });
+        // this.$store.dispatch('LoginByUsername', this.loginForm).then((d) => {
+        //     this.$router.push('/emergency');
+        // });
+        this.$router.push('/emergency');
     }
     public mounted() {
         // 登录清除token记录
